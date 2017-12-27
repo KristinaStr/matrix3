@@ -1,302 +1,351 @@
-#include <iostream>
-#include <fstream>
+
+			#include <iostream>
 #include <sstream>
+#include <fstream>
+
 using namespace std;
-void write(float** matr, unsigned int rows3, unsigned int columns3) {
-	for (unsigned int i = 0; i<rows3; i++) {
-		for (unsigned int j = 0; j<columns3; j++) {
-			cout << matr[i][j] << ' ';
-		}
-		cout << endl;
-	}
+
+float **matrix, **matrix1, **matrix2;
+
+void create( float ** & elements,
+             unsigned int rows,
+             unsigned int columns,
+             float filler = 0.0f) {
+
+    elements = new float *[ rows ];
+    for( unsigned int i = 0; i < rows; ++i ) {
+        elements[ i ] = new float[ columns ];
+        for( unsigned int j = 0; j < columns; ++j ) {
+            elements[ i ][ j ] = filler;
+        }
+    }
 }
-float ** readmatr (unsigned int &rows,unsigned int &columns1,string s) {
-	float** matrix = nullptr;
-	char op;
-	ifstream fin;
-	fin.open(s.c_str());
-	if ( !fin.is_open() ) {
-		cerr << "404\n";
-		return nullptr;
-	}
-	string line;
-	getline(fin, line);
-	istringstream stream(line);
-	if (stream >> rows && stream >> op && op == ',' && stream >> columns) {
-	matr = new float *[ rows1 ];
-	for( unsigned int i = 0; i < rows1; ++i ) {
-	 	matr[ i ] = new float[ columns1 ];
-	    	for( unsigned int j = 0; j < columns1; ++j ) {
-	       	 	matr[ i ][ j ] = 0.0f;
-	    	}
-	}
-			for (unsigned int i = 0; i<rows; i++) {
-				for (unsigned int j = 0; j<columns; j++) {
-					fin >> matr[i][j];
-			}
-		}
-	}
-	fin.close();
-	return matr;
+
+void write(float ** elements,
+           unsigned int rows,
+           unsigned int columns) {
+    for (int i = 0; i < rows; i++){
+        for (int j = 0; j < columns; j++){
+            cout << elements[i][j] << " ";
+        }
+        cout << endl;
+    }
+
 }
-bool vernvvod(string &s1, char &op, string &s2) {
-	bool usp = false;
-	string stroka;
-	getline(cin, stroka);
-	istringstream stream(stroka);
-	if (stream >> s1 && stream >> op) {
-		if (op == 'T' || op == 'R') {
-			usp = !usp;
-			return usp;
-		}
-		else {
-			if (stream >> s2) {
-				usp = !usp;
-			}
-		}
-	};
-	return usp	;
+
+bool add( float ** lhs_elements,
+          unsigned int lhs_rows,
+          unsigned int lhs_columns,
+          float ** rhs_elements,
+          unsigned int rhs_rows,
+          unsigned int rhs_columns,
+          float ** & result_elements,
+          unsigned int & result_rows,
+          unsigned int & result_columns ) {
+
+    unsigned int rows;
+    unsigned int columns;
+    rows = lhs_rows;
+    columns = lhs_columns;
+
+    create(result_elements, rows, columns);
+
+    result_rows = rows;
+    result_columns = columns;
+
+    if ((lhs_rows == rhs_rows) && (lhs_columns == rhs_columns)) {
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < columns; j++) {
+                result_elements[i][j] = lhs_elements[i][j] + rhs_elements[i][j];
+            }
+        }
+        return true;
+    }
+    else return false;
 }
-bool pl (float **matr1, int rows1, int columns1, float **matr2, int rows2, int columns2, float ** matr, int rows3, int columns3,bool &dop) {	
-	bool succ=0.0f;
-	if (rows1 == rows2 && columns1 == columns2){	
-		succ=1;
-		for (unsigned int i = 0; i<rows3; i++){	
-	 		for (unsigned int j = 0; j<columns3; j++){
-	 		  	matr[i][j] = matr1[i][j]+matr2[i][j];
-			}
-		}
-	}
-	else
-	{
-		cout<<"i can't do it";
-		dop=false;
-	}
-	return succ;
+
+bool sub( float ** lhs_elements,
+          unsigned int lhs_rows,
+          unsigned int lhs_columns,
+          float ** rhs_elements,
+          unsigned int rhs_rows,
+          unsigned int rhs_columns,
+          float ** & result_elements,
+          unsigned int & result_rows,
+          unsigned int & result_columns ) {
+
+    unsigned int rows;
+    unsigned int columns;
+    rows = lhs_rows;
+    columns = lhs_columns;
+
+    create(result_elements, rows, columns);
+
+    if ((lhs_rows == rhs_rows) && (lhs_columns == rhs_columns)) {
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < columns; j++) {
+                result_elements[i][j] = lhs_elements[i][j] - rhs_elements[i][j];
+            }
+        }
+        return true;
+    }
+    else return false;
+
 }
-bool min (float **matr1, int rows1, int columns1, float **matr2, int rows2, int columns2, float ** matr, int rows3, int columns3,bool &dop) {	
-	bool succ=0.0f;
-	if (rows1 == rows2 && columns1 == columns2){	
-		succ=1;
-		for (unsigned int i = 0; i<rows3; i++){	
-	 		for (unsigned int j = 0; j<columns3; j++){
-	 		  	matr[i][j] = matr1[i][j]-matr2[i][j];
-			}
-		}
-	}
-	else
-	{
-		cout<<"i can't do it";
-		dop=false;
-	}
-	return succ;	
+
+bool multiply( float ** lhs_elements,
+          unsigned int lhs_rows,
+          unsigned int lhs_columns,
+          float ** rhs_elements,
+          unsigned int rhs_rows,
+          unsigned int rhs_columns,
+          float ** & result_elements,
+          unsigned int & result_rows,
+          unsigned int & result_columns ) {
+
+    unsigned int rows;
+    unsigned int columns;
+    rows = lhs_rows;
+    columns = lhs_columns;
+
+    create(result_elements, rows, columns);
+
+    result_rows = rows;
+    result_columns = columns;
+
+    if ((lhs_rows == rhs_columns) && (lhs_columns == rhs_rows)) {
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < columns; j++) {
+                for(int k = 0; k < lhs_columns; k++)
+                result_elements[i][j] += lhs_elements[i][k] * rhs_elements[k][j];
+            }
+        }
+        return true;
+    }
+    else return false;
 }
-bool umn (float **matr1, int rows1, int columns1, float **matr2, int rows2, int columns2, float ** matr, int rows3, int columns3,bool &dop) {	
-	bool succ=0.0f;
-	if (columns1 == rows2) {	
-		for(unsigned int i = 0; i < rows3; ++i ){
-    			for(unsigned int j = 0; j < columns3; ++j ){
-      		  		int result = 0;
-      		   		for( int k = 0; k < columns3; ++k ){
-       			 		result += matr1[i][k] * matr2[k][j];
-      		   		}
-      		  		matr[i][j] = result;
-    			}
-  		}
-	 	cout << endl;
-	 	succ=1;
-	}
-	else
-	{
-		cout<<"i can't do it";
-		dop=false;
-	}
-	return succ;	
+
+bool transpose( float ** lhs_elements,
+                unsigned int lhs_rows,
+                unsigned int lhs_columns,
+                float ** & result_elements,
+                unsigned int & result_rows,
+                unsigned int & result_columns ){
+    unsigned int rows;
+    unsigned int columns;
+    rows = lhs_columns;
+    columns = lhs_rows;
+
+    create(result_elements, rows, columns);
+
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < columns; j++) {
+            result_elements[i][j] = lhs_elements[j][i];
+            }
+        }
+        return true;
 }
-void minim(float ** matr, float **newmat, unsigned int i,unsigned int j, unsigned int N)
-{
-	unsigned int k = 0; unsigned int  g;
-	for (unsigned int h = 0;  h<N -1; h++) { 		
-		if (h == i){
-			k = 1;
-		}
-			g = 0;
-		for (unsigned int v = 0; v< N - 1; v++) {
-			if (v == j){
-				g = 1;
-			}
-			newmat[ h ][ v ] = matr[ h + k ][ v + g ];
-		}
-	}
+
+void GetMatr(float **&mas, float **p, int i, int j, int m) {
+    int ki, kj, di, dj;
+    di = 0;
+    for (ki = 0; ki<m - 1; ki++) { // проверка индекса строки
+        if (ki == i) di = 1;
+        dj = 0;
+        for (kj = 0; kj<m - 1; kj++) { // проверка индекса столбца
+            if (kj == j) dj = 1;
+            p[ki][kj] = mas[ki + di][kj + dj];
+        }
+    }
 }
-float opredelitel(float ** matr, unsigned int N)
-{
-	unsigned int i=0;
-	float opr=0;
-	unsigned int M = N - 1;
-	char step = 1;
-	float ** newmat;
-	newmat = new float *[N];
-	for (unsigned int i = 0; i < N; i++){
-		newmat[i] = new float[N];
-	}
-	if (N < 1){
-		for (unsigned int i = 0; i < N; i++){
-		    delete[] newmat[i];
-	    }
-	    delete newmat;
-		cout << "Error";
-	}
-	if (N == 1){
-		opr = matr[0][0];
-		return(opr);
-	}
-	if (N == 2){
-		opr = matr[0][0] * matr[1][1] - (matr[1][0] * matr[0][1]);
-		for (unsigned int i = 0; i < N; i++){
-		    delete[] newmat[i];
-	    }
-	    delete newmat;
-		return(opr);
-	}
-	if (N>2){
-		for (i = 0; i<N; i++){
-			minim(matr, newmat, i, 0, N);
-			opr = opr + step * matr[i][0] * opredelitel(newmat, M);
-			step = -step;
-		}
-	}
-	for (unsigned int i = 0; i < N; i++){
-		    delete[] newmat[i];
-	    }
-	    delete newmat;
-	return(opr);
+// Рекурсивное вычисление определителя
+int Determinant(float **&mas, unsigned int m) {
+    int i, j, d, k, n;
+    float **p;
+    p = new float*[m];
+    for (i = 0; i<m; i++)
+        p[i] = new float[m];
+    j = 0; d = 0;
+    k = 1; //(-1) в степени i
+    n = m - 1;
+    if (m<1) cout << "Определитель вычислить невозможно!";
+    if (m == 1) {
+        d = mas[0][0];
+        return(d);
+    }
+    if (m == 2) {
+        d = mas[0][0] * mas[1][1] - (mas[1][0] * mas[0][1]);
+        return(d);
+    }
+    if (m>2) {
+        for (i = 0; i<m; i++) {
+            GetMatr(mas, p, i, 0, m);
+        //    PrintMatr(p, n);
+            d = d + k * mas[i][0] * Determinant(p, n);
+            k = -k;
+        }
+    }
+    return(d);
 }
-float** obrmat(int x, float **mass, float **Obrmatr,bool &dop) {	
-	int i, j, k;
-	Obrmatr=new float* [x];
-	for(i=0; i<x; i++) {
-		Obrmatr[i]=new float [x];
-		for(j=0; j<x; j++) {Obrmatr[i][j]=0;}
-		Obrmatr[i][i]=1; 
-	}
-	float a, b;
-	for(i=0; i<x; i++) {
-		a=mass[i][i];
-		for(j=i+1; j<x; j++) {
-			b=mass[j][i];
-			for(k=0; k<x; k++) {
-				mass[j][k]=mass[i][k]*b-mass[j][k]*a;
-				Obrmatr[j][k]=Obrmatr[i][k]*b-Obrmatr[j][k]*a; 
-			} 
-		} 
-	}
-	float sum;
-	for(i=0; i<x; i++) {
-		for(j=x-1; j>=0; j--) {
-			sum=0;
-			for(k=x-1;k>j;k--){
-				sum+=mass[j][k]*Obrmatr[k][i];
-				if(mass[j][j]==0) {
-					for( unsigned int i = 0; i < x; ++i ) {
-                    delete [] Obrmatr[ i ];
+
+bool reversing( float ** lhs_elements,
+                unsigned int lhs_rows,
+                unsigned int lhs_columns,
+                float ** & result_elements,
+                unsigned int & result_rows,
+                unsigned int & result_columns ) {
+    if (Determinant(lhs_elements, lhs_rows) == 0) {
+        return false;
+    } else {
+        if (lhs_rows != lhs_columns)
+            return NULL;
+        unsigned int rows;
+        unsigned int columns;
+        float t;
+        rows = lhs_rows;
+        columns = lhs_columns;
+
+        create(result_elements, rows, columns);
+
+        for (int i = 0; i < rows; i++)
+            result_elements[i][i] = 1;
+        for (int i = 0; i < rows; i++) {
+            t = lhs_elements[i][i];
+            for (int j = 0; j < columns; j++) {
+                lhs_elements[i][j] /= t;
+                result_elements[i][j] /= t;
+            }
+
+            for (int k = 0; k < rows; k++) {
+                if (k != i) {
+                    t = lhs_elements[k][i];
+                    for (int j = 0; j < columns; j++) {
+                        lhs_elements[k][j] -= lhs_elements[i][j] * t;
+                        result_elements[k][j] -= result_elements[i][j] * t;
                     }
-                    delete [] Obrmatr; 
-                    cout << endl << "There isn't the inverse matrix for this one";
-				dop = false;
-				return false;
-			}
-				}
-			}
-			Obrmatr[j][i]=(Obrmatr[j][i]-sum)/mass[j][j]; 
-		} 
-	} 
-	return Obrmatr; 
+                }
+            }
+        }
+
+        return true;
+    }
 }
-float **matr, **matr1, **matr2;
-	int main () {
-		string s1,s2;
-		unsigned int rows1, rows2, rows3, columns1, columns2, columns3;
-		char op;
-		bool k=false;
-		if (!(vernvvod(s1, op, s2))) {
-		cin.get();
-		return 0;
-		}
-		matr1=readmatr (rows1, columns1, matr1);
-		if (op == 'T') {
-			rows3=columns1;
-			columns3=rows1;
-			matr = new float *[ rows3 ];
-			for( unsigned int i = 0; i < rows3; ++i ) {
-	    			matr[ i ] = new float[ columns3 ];
-	    			for( unsigned int j = 0; j < columns3; ++j ) {
-	       	 			matr[ i ][ j ] = 0.0f;
-	    			}
-			}
-		}
-		else {	
-			rows3=rows1;
-			columns3=columns1;
-			matr = new float *[ rows3 ];
-			for( unsigned int i = 0; i < rows3; ++i ) {
-	    			matr[ i ] = new float[ columns3 ];
-	    			for( unsigned int j = 0; j < columns3; ++j ) {
-	       	 			matr[ i ][ j ] = 0.0f;
-	    			}
-			}
-		}	
-			 if(op=='+') {
-			 	bool dop=true;
-				matr2=readmatr (rows2, columns2, matr2); 	
-				k=pl(matr1, rows1, columns1, matr2, rows2, columns2, matr, rows3, columns3,dop);
-				if (!dop) { cin.get(); return 0; }
-				break;
-			}
-			else if(op== '-') {	
-				bool dop=true; 
-				matr2=readmatr (rows2, columns2, matr2); 	
-				k=min(matr1, rows1, columns1, matr2, rows2, columns2, matr, rows3, columns3,dop);
-				if (!dop) { cin.get(); return 0; }
-				break;
-			}
-			else if(op== '*') {	
-				bool dop=true; 
-				matr2=readmatr (rows2, columns2, matr2); 	
-				k=umn(matr1, rows1, columns1, matr2, rows2, columns2, matr, rows3, columns3,dop);
-				if (!dop) { cin.get(); return 0; }
-				break;		 
-			}
-			else if(op== 'T') {
-				for (int i=0; i<rows1; i++){
-					for (int j=0; j<columns1; j++){		
-						matr[j][i]=matr1[i][j];
-					}
-				}
-			}
-			else if(op== 'R') {
-				if (columns1==rows1){	float opr = opredelitel(matr1, columns1);
-                if(opr!=0){
-				bool dop= true;
-				succ = obrmatr(rows1, matrix1, matrix, dop);
-			if (!dop ) { cin.get(); return 0; }
-		}
-		else cout << "An error has occured while reading input data";
-		break;
-	}
-			}
-		cout << endl;
-		if (op == 'T') {
-		    	write(matr, rows3, columns3);
-	}
-	else {
-		if (succ   == true) {
-			write(matr, rows3, columns3);
-		}
-		else {
-			cout << "An error has occured while reading input data";
-		}
-	}
-		cin.get();
-		return 0;
-	}
+
+bool read_matrix( float ** & elements,
+                  unsigned int & result_rows,
+                  unsigned int & result_columns,
+                  string s) {
+    char symbol;
+    ifstream stream;
+    stream.open("/root/" + s);
+    if ((stream >> result_rows) && (stream >> symbol) && (stream >> result_columns)) {
+
+        create(elements, result_rows, result_columns);
+
+        bool success = true;
+        for (int i = 0; i < result_rows && success; ++i) {
+            for (int j = 0; j < result_columns; ++j) {
+                if (!(stream >> elements[i][j])) {
+                    success = false;
+                    break;
+                }
+            }
+        }
+        stream.close();
+        return success;
+
+    }
+
+    else {
+        stream.close();
+        return false;
+    }
+}
+
+void destroy( float ** elements,
+              unsigned int rows,
+              unsigned int columns) {
+    for (unsigned int i = 0; i < rows; ++i) {
+        delete[] elements[i];
+    }
+    delete[] elements;
+}
+
+int main() {
+    unsigned rows1, columns1;
+    unsigned rows2, columns2;
+    unsigned rows, columns;
+
+    char symbol;
+    bool q;
+    string s, str1, str2;
+    getline(cin, s);
+    istringstream stream(s);
+    stream >> str1 >> symbol >> str2;
+    q = read_matrix(matrix1, rows1, columns1, str1);
+    if (q) {
+        switch (symbol) {
+
+            case '+':
+                q = read_matrix(matrix2, rows2, columns2, str2);
+                add(matrix1, rows1, columns1, matrix2, rows2, columns2, matrix, rows, columns);
+                if (q)
+                    write(matrix, rows, columns);
+                else
+                    cout << "An error has occured while reading input data";
+                destroy(matrix1, rows1, columns1);
+                destroy(matrix2, rows2, columns2);
+                destroy(matrix, rows, columns);
+                break;
+
+            case '-':
+                q = read_matrix(matrix2, rows2, columns2, str2);
+                sub(matrix1, rows1, columns1, matrix2, rows2, columns2, matrix, rows, columns);
+                if (q)
+                    write(matrix, rows, columns);
+                else
+                    cout << "An error has occured while reading input data";
+                destroy(matrix1, rows1, columns1);
+                destroy(matrix2, rows2, columns2);
+                destroy(matrix, rows, columns);
+                break;
+
+            case '*':
+                q = read_matrix(matrix2, rows2, columns2, str2);
+                multiply(matrix1, rows1, columns1, matrix2, rows2, columns2, matrix, rows, columns);
+                if (q)
+                    write(matrix, rows, columns);
+                else
+                    cout << "An error has occured while reading input data";
+                destroy(matrix1, rows1, columns1);
+                destroy(matrix2, rows2, columns2);
+                destroy(matrix, rows, columns);
+                break;
+
+            case 'T':
+                transpose(matrix1, rows1, columns1, matrix, rows, columns);
+                write(matrix, rows, columns);
+                destroy(matrix1, rows1, columns1);
+                destroy(matrix2, rows2, columns2);
+                destroy(matrix, rows, columns);
+                break;
+
+            case 'R':
+                q = reversing(matrix1, rows1, columns1, matrix, rows, columns);
+                if (q)
+                    write(matrix, rows1, columns1);
+                else {
+                    cout << "There is no reverse matrix";
+                    cout << endl;
+                }
+                destroy(matrix1, rows1, columns1);
+                destroy(matrix2, rows2, columns2);
+                destroy(matrix, rows, columns);
+                break;
+        }
+    }
+    else
+        cout << "An error has occured while reading input data";
+    cin.get();
+    return 0;
+}
